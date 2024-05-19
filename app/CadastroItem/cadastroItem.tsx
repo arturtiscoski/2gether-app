@@ -30,19 +30,17 @@ export default function cadastroItem() {
   const onSubmit = async () => {
     try {
       setLoading(true);
-      const finalLinhas = linhas.filter((linha: any) => !(linha.name == ""));
+      const nonRemoveLinhas = linhas.filter((linha: any) => !linha.remove);
 
-      if (finalLinhas.length > 0) {
-        for (let i = 0; i < finalLinhas.length; i++) {
-          finalLinhas[i] = { ...finalLinhas[i], id: uuid.v4() };
+      if (nonRemoveLinhas.length > 0) {
+        for (let i = 0; i < nonRemoveLinhas.length; i++) {
+          nonRemoveLinhas[i] = { ...nonRemoveLinhas[i], id: uuid.v4() };
         }
 
-        console.log("params.type", params.type)
-
         if (params.type === "ESTOQUE") {
-          AsyncStorage.setItem("@saveestoque:estoques", JSON.stringify(finalLinhas));
+          await AsyncStorage.setItem("@saveestoque:estoques", JSON.stringify(nonRemoveLinhas));
         } else {
-          AsyncStorage.setItem("@savelista:lista", JSON.stringify(finalLinhas));
+          await AsyncStorage.setItem("@savelista:lista", JSON.stringify(nonRemoveLinhas));
         }
 
         setLoading(false);

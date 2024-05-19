@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Pressable, StyleSheet, ScrollView } from 'react-native';
+import { Pressable, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { ActivityIndicator } from 'react-native-paper';
 import renderItem from '@/components/RenderItem';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from "react-native-uuid";
 import { Link } from 'expo-router';
+import { DragSortableView } from 'react-native-drag-sort';
 // import ReorderableList, { ReorderableListReorderEvent } from 'react-native-reorderable-list';
+
+const { width, height } = Dimensions.get('window')
+
+const parentWidth = width
+const childrenWidth = width
+const childrenHeight = 48
 
 export default function TabTwoScreen() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [scrollEnable, setScrollEnable] = useState(true);
 
   const onChangeText = (value: any, indexField: any, field: any) => {
     const index = data.findIndex((item: any) => item.id == indexField);
@@ -54,6 +62,11 @@ export default function TabTwoScreen() {
     }
   };
 
+  const onDataChange = async (data: any) => {
+    await AsyncStorage.removeItem("@saveestoque:estoques");
+    await AsyncStorage.setItem("@saveestoque:estoques", JSON.stringify(data));
+  }
+
   return (
     <View style={styles.container}>
       <View style={{ flexDirection: 'row' }}>
@@ -64,20 +77,27 @@ export default function TabTwoScreen() {
           </Pressable>
         </Link>
       </View>
-      <ScrollView>
+      {/* <ScrollView>
         {data && data.map((item: any, index: any) => {
           return (
             renderItem({ key: index, item, onChangeText: (value: any, id: any) => onChangeText(value, id, "qtd") })
           )
         })}
+      </ScrollView> */}
+      <ScrollView scrollEnabled={scrollEnable}>
+        <DragSortableView
+          dataSource={data}
+          childrenHeight={80}
+          parentWidth={parentWidth}
+          childrenWidth={childrenWidth}
+          keyExtractor={(item) => item.id}
+          onDataChange={onDataChange}
+          onDragStart={() => setScrollEnable(false)}
+          onDragEnd={() => setScrollEnable(true)}
+          renderItem={(item, key) => {
+            return renderItem({ item, key, onChangeText: (value: any, id: any) => onChangeText(value, id, "qtd") }) as React.JSX.Element
+          }} />
       </ScrollView>
-      {/* <ReorderableList
-        data={data}
-        onReorder={handleReorder}
-        renderItem={renderItem as any}
-        keyExtractor={(item: any) => item.id}
-        dragScale={1.025}
-      /> */}
       <Pressable style={styles.saveButton}
         onPress={onSave}
       >

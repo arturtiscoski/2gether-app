@@ -54,6 +54,7 @@ function RootLayoutNav() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         <Stack.Screen name="CadastroItem/cadastroItem" options={{ title: "Cadastro de item" }} />
+        <Stack.Screen name="CadastroItem/cadastroAgenda" options={{ title: "Cadastro de eventos" }} />
       </Stack>
     </ThemeProvider>
   );

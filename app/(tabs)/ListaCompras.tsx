@@ -15,7 +15,7 @@ import { Link, router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DragSortableView } from "react-native-drag-sort";
 
-const { width } = Dimensions.get('window')
+const { width, height } = Dimensions.get('window')
 
 const parentWidth = width
 const childrenWidth = width
@@ -43,6 +43,7 @@ const ListaComprasComponent = ({ navigation }: any) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [organization, setOrganization] = useState("manual");
+  const [scrollEnable, setScrollEnable] = useState(true);
   // const params = route.params;
 
   const loadListaCompras = async () => {
@@ -50,21 +51,6 @@ const ListaComprasComponent = ({ navigation }: any) => {
 
     setData(JSON.parse(response || ""));
   };
-
-  const onSave = async () => {
-    try {
-      setLoading(true);
-
-      data.map((item: any, index) => item.ordination = index + 1)
-
-      AsyncStorage.setItem("@savelista:lista", JSON.stringify(data));
-
-      setLoading(false);
-      loadListaCompras();
-    } catch (error) {
-      setLoading(false);
-    }
-  }
 
   const onChangeText = (value: any, indexField: any, field: any) => {
     const index = data.findIndex((item: any) => item.index == indexField);
@@ -79,24 +65,13 @@ const ListaComprasComponent = ({ navigation }: any) => {
   };
 
   const renderItem = (item: any, index: any) => {
-    if (item.remove) {
-      return <></>;
-    }
-
-    return (
-      <View style={styles.item}>
-        <View style={styles.item_children}>
-          <Text style={styles.item_text}>{item.txt}</Text>
-        </View>
-      </View>
-    )
-
     return (
       <View>
         <Card style={{ marginHorizontal: 10 }}>
           <Card.Content>
             <View
               style={{
+                width: childrenWidth - 70,
                 flexDirection: "row",
                 alignContent: "space-between",
               }}
@@ -104,15 +79,9 @@ const ListaComprasComponent = ({ navigation }: any) => {
               <Text style={styles.itemCircle}>
                 {item.qtd}
               </Text>
-              <TextInput
-                style={[styles.input]}
-                placeholder={"Digite uma breve descrição"}
-                onChangeText={(text: any) =>
-                  onChangeText(text, item.index, "name")
-                }
-              >
+              <Text style={[styles.input]}  >
                 {item.name}
-              </TextInput>
+              </Text>
               <Checkbox
                 status={
                   item.checked ? "checked" : "unchecked"
@@ -136,10 +105,17 @@ const ListaComprasComponent = ({ navigation }: any) => {
       newData.sort(function (x: any, y: any) {
         return x.checked === y.checked ? 0 : x.checked ? 1 : -1;
       });
+
+      onDataChange(newData);
     }
 
     setData(newData);
   };
+
+  const onDataChange = async (data: any) => {
+    await AsyncStorage.removeItem("@savelista:lista");
+    await AsyncStorage.setItem("@savelista:lista", JSON.stringify(data));
+  }
 
   useEffect(() => {
     loadListaCompras();
@@ -176,27 +152,20 @@ const ListaComprasComponent = ({ navigation }: any) => {
             )
           })}
         </ScrollView> */}
-        <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView scrollEnabled={scrollEnable} style={{ height: height - 192 }}>
           <DragSortableView
             dataSource={data}
             childrenHeight={80}
             parentWidth={parentWidth}
             childrenWidth={childrenWidth}
             keyExtractor={(item) => item.id}
+            onDataChange={onDataChange}
+            onDragStart={() => setScrollEnable(false)}
+            onDragEnd={() => setScrollEnable(true)}
             renderItem={(item, index) => {
               return renderItem(item, index)
             }} />
-        </SafeAreaView>
-
-        {/* <DraggableFlatList
-          data={data}
-          onDragEnd={({ data }) => setData(data)}
-          keyExtractor={(item) => item.key}
-          renderItem={renderItem}
-        /> */}
-        <Pressable style={styles.saveButton} onPress={onSave}>
-          <Text style={styles.textButton}>Salvar</Text>
-        </Pressable>
+        </ScrollView>
         {loading && (
           <ActivityIndicator
             style={{ marginTop: 20 }}
@@ -212,7 +181,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     alignItems: "center",
-    backgroundColor: "#f4f4f4",
+    backgroundColor: "#FFF",
   },
   container: {
     width: "100%",
@@ -291,12 +260,8 @@ const styles = StyleSheet.create({
   },
   item_children: {
     width: childrenWidth,
-    height: childrenHeight - 4,
-    backgroundColor: '#ffffff',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 4,
+    height: childrenHeight,
+    backgroundColor: '#f00',
   },
   item_icon: {
     width: childrenHeight * 0.6,
