@@ -175,11 +175,6 @@ export default function cadastroAgenda() {
           <Pressable style={styles.button} onPress={onSubmit}>
             <Text style={styles.text}>Atualizar</Text>
           </Pressable>
-          <Pressable style={styles.button} onPress={() => {
-            AsyncStorage.removeItem("@saveagenda:agendas");
-          }}>
-            <Text style={styles.text}>ZERAR TUDO</Text>
-          </Pressable>
         </View>
         {loading && (
           <ActivityIndicator
