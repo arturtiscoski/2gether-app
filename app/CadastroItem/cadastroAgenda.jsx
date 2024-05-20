@@ -26,7 +26,7 @@ export default function cadastroAgenda() {
   const handleFetch = async () => {
     const response = await AsyncStorage.getItem("@saveagenda:agendas");
 
-    const JSONresponse = JSON.parse(response || "");
+    const JSONresponse = JSON.parse(response || "{}");
 
     let useDate = timeToString(textDate);
 
@@ -47,7 +47,7 @@ export default function cadastroAgenda() {
 
       if (nonRemoveLinhas.length > 0) {
         const response =  await AsyncStorage.getItem("@saveagenda:agendas")
-        const json = JSON.parse(response || "");
+        const json = JSON.parse(response || "{}");
 
         json[timeToString(textDate)] = nonRemoveLinhas; 
         
@@ -174,6 +174,11 @@ export default function cadastroAgenda() {
           </Pressable>
           <Pressable style={styles.button} onPress={onSubmit}>
             <Text style={styles.text}>Atualizar</Text>
+          </Pressable>
+          <Pressable style={styles.button} onPress={() => {
+            AsyncStorage.removeItem("@saveagenda:agendas");
+          }}>
+            <Text style={styles.text}>ZERAR TUDO</Text>
           </Pressable>
         </View>
         {loading && (

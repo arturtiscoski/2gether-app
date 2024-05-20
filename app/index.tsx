@@ -65,7 +65,7 @@ export default function Login() {
           autoCorrect={false}
           onChange={() => { }}
         />
-        <Link href="/(tabs)" asChild>
+        <Link href="/(tabs)/agendaScreen" asChild>
           <TouchableOpacity style={styles.btnSubmit}>
             <Text style={styles.submitText}>Acessar</Text>
           </TouchableOpacity>

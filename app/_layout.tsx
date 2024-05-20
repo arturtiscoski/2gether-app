@@ -50,7 +50,7 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={DefaultTheme}>
       <Stack>
-        <Stack.Screen name='login' options={{ headerShown: false }} />
+        <Stack.Screen name='index' options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         <Stack.Screen name="CadastroItem/cadastroItem" options={{ title: "Cadastro de item" }} />
